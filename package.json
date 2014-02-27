@@ -1,0 +1,30 @@
+{
+  "name": "backbone.filterable-collection",
+  "version": "0.1.0",
+  "description": "Backbone filterable collection",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sydcanem/backbone.filterable-collection"
+  },
+  "keywords": [
+    "backbone",
+    "frontend",
+    "mvc"
+  ],
+  "author": "sydcanem",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sydcanem/backbone.filterable-collection/issues"
+  },
+  "homepage": "https://github.com/sydcanem/backbone.filterable-collection",
+  "devDependencies": {
+    "grunt": "~0.4.2"
+  }
+}
