@@ -18,17 +18,21 @@
 		factory(_, Backbone);
 	}
 }(this, function(_, Backbone) {
-
+	
 	Backbone.FilterableCollection = Backbone.Collection.extend({
-
-		initialize: function() {},
 		
-		/**
-		 * Models that were filtered out of the collection
-		 * @type {Backbone}
-		 */
-		excludedModels: new Backbone.Collection(),
+		constructor : function( options ) {
+			Backbone.Collection.apply(this, arguments);
+			// Storing original models after server sync for reference
+			this.listenTo( this, "sync", this._setOriginal );
+			// Storing original models if models are not from server
+			// this event is unbinded if either "sync" or initial "reset" is called
+			this.listenToOnce( this, "reset", this._setOriginal );
+		},
 
+		original : new Backbone.Collection(),
+		excludedModels : new Backbone.Collection(),
+		
 		/**
 		 * Filters the collection's models
 		 * @param  {Function} iterator
@@ -39,7 +43,7 @@
 			var includes = [];
 			var that = this;
 
-			_.each(this.models, function( model, index ) {
+			_.each(this.original.models, function( model, index ) {
 				if (iterator.call(that, model, index, this.models)) {
 					includes.push(model);
 				} else {
@@ -47,12 +51,22 @@
 				}
 			});
 
-			// Emits reset to re-render view if used in Marionette.Collectview;
+			// emits reset to re-render view if used in marionette.collectview;
 			this.reset(includes);
-			this.excludedmodels.reset(excludes);
+			this.excludedModels.reset(excludes);
 		},
 
-		restore : function() {},
+		_restore : function() {
+			this.excludedModels.reset([]);
+			this.reset( this.original.models );
+		},
+
+		_setOriginal : function( collection ) {
+			this.original.reset( collection.models );
+			this.excludedModels.reset([]);
+			this.stopListening(this, "reset");
+		},
+
 		include : function() {},
 		exclude : function() {},
 

@@ -13,7 +13,7 @@ describe('Backbone.FilterableCollection', function () {
 			filterable.excludedModels.should.be.an.instanceof(Backbone.Collection);
 		});
 		it('should have models if method filterItems is called', function () {
-			var testData = [{'id': 1}, {'id':2}, {'id':3}];
+			var testData = [{'id': 1}, {'id':2}, {'id':3}];3
 			filterable.reset(testData);
 
 			var includes = [];
@@ -33,6 +33,10 @@ describe('Backbone.FilterableCollection', function () {
 
 			filterable.filter(iterator);
 			filterable.excludedModels.should.have.length(2);
+		});
+		it('should have no models when _restore is called ', function() {
+			filterable._restore();
+			filterable.excludedModels.should.have.length(0);
 		});
 	});
 });
