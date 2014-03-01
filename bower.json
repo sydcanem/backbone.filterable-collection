@@ -1,0 +1,30 @@
+{
+  "name": "backbone.filterable-collection",
+  "version": "0.1.1",
+  "homepage": "https://github.com/sydcanem/backbone.filterable-collection",
+  "authors": [
+    "sydcanem <icqhv.santos@gmail.com>"
+  ],
+  "description": "A BackboneJS collection with filtering capabilities",
+  "main": "src/backbone.filterable-collection",
+  "keywords": [
+    "backbone",
+    "filter",
+    "collection"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "backbone": "~1.1.2",
+    "chai": "~1.9.0",
+    "jquery": "~2.1.0",
+    "mocha": "~1.17.1",
+    "underscore": "~1.6.0"
+  }
+}

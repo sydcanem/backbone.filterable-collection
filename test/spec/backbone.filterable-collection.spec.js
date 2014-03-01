@@ -1,7 +1,43 @@
-describe('Backbone.FilterableCollection', function () {
-	it('should be an instance of Backbone.FilterableCollection', function () {
+describe( 'Backbone.FilterableCollection', function () {
+	it( 'should be an instance of Backbone.FilterableCollection', function () {
 		var filterable = new Backbone.FilterableCollection();
 		filterable.should.be.an.instanceof( Backbone.FilterableCollection );
+	});
+
+	it('should be an instance of Backbone.Collection', function() {
+		var filterable = new Backbone.FilterableCollection();
+		filterable.should.be.an.instanceof( Backbone.Collection );
+	});
+
+	describe('should work well when extended', function() {
+		var filterable;
+
+		before(function() {
+			var ExtendedCollection = Backbone.FilterableCollection.extend({
+				initialize: function() {},
+				returnTrue: function() { return true; },
+				returnFalse: function() { return false; }
+			});
+			
+			filterable = new ExtendedCollection();
+		});
+
+		it('should have the defined attributes', function() {
+			filterable.should.have.property('_original');
+			filterable.should.have.property('_excludedModels');
+		});
+		
+		it('should have the defined methods', function(){
+			filterable.should.have.property('filterItems');
+			filterable.should.have.property('_restore');
+			filterable.should.have.property('_setOriginal');
+			filterable.should.have.property('filter');
+		});
+
+		it('extensions should work as expected', function() {
+			filterable.returnTrue().should.equal( true );
+			filterable.returnFalse().should.equal( false );
+		});
 	});
 
 	describe('original models attribute', function() {
