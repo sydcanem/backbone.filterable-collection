@@ -33,12 +33,12 @@
 		/**
 		 * Collection of models that initialized the collection
 		 */
-		_original: new Backbone.Collection(),
+		_original: [],
 
 		/**
 		 * Collection of models that were excluded during filtering
 		 */
-		_excludedModels: new Backbone.Collection(),
+		_excludedModels: [],
 
 		/**
 		 * filters the collection's models
@@ -50,7 +50,7 @@
 			var includes = [];
 			var that = this;
 
-			_.each( this._original.models, function( model, index ) {
+			_.each( this._original, function( model, index ) {
 				if ( iterator.call( that, model, index, this.models ) ) {
 					includes.push( model );
 				} else {
@@ -60,15 +60,15 @@
 
 			// emits reset to re-render view if used in marionette.collectview;
 			this.reset( includes );
-			this._excludedModels.reset( excludes );
+			this._excludedModels = excludes;
 		},
 
 		/**
 		 * Restore this.models to original
 		 */
 		_restore: function() {
-			this._excludedModels.reset( [] );
-			this.reset( this._original.models );
+			this._excludedModels = [];
+			this.reset( this._original );
 		},
 
 		/**
@@ -76,7 +76,7 @@
 		 * @param {Backbone.Collection} collection
 		 */
 		_setOriginal: function( collection ) {
-			this._original.reset( collection.models );
+			this._original = collection.models;
 			// Stop listening on succeding "reset" event
 			this.stopListening( this, "reset", this._setOriginal );
 		},
@@ -94,7 +94,7 @@
 			var includes = [];
 			var that = this;
 
-			this.each( function( model ) {
+			_.each( this._original,  function( model ) {
 				if ( _.contains( models, model ) ) {
 					includes.push( model );
 				} else {
@@ -104,7 +104,7 @@
 
 			// Emits reset to re-render view if used in Marionette.Collectview;
 			this.reset( includes );
-			this._excludedModels.reset( excludes );
+			this._excludedModels = excludes;
 		}
 	} );
 
