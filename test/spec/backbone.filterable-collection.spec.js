@@ -65,12 +65,11 @@ describe( 'Backbone.FilterableCollection', function () {
 
 	describe('excludedModels attribute', function () {
 		var filterable;
+
 		before(function () {
 			filterable = new Backbone.FilterableCollection();
 		});
-		it('should be an instance of Backbone.Collection', function () {
-			filterable._excludedModels.should.be.an.instanceof(Backbone.Collection);
-		});
+
 		it('should have models if method filterItems is called', function () {
 			var testData = [{'id': 1}, {'id':2}, {'id':3}];
 			filterable.reset(testData);
@@ -82,6 +81,7 @@ describe( 'Backbone.FilterableCollection', function () {
 			filterable.filterItems( includes );
 			filterable._excludedModels.should.have.length(1);
 		});
+
 		it('should have models if method filter is called', function () {
 			var testData = [{'id': 1}, {'id':2}, {'id':3}];
 			filterable.reset(testData);
@@ -93,9 +93,11 @@ describe( 'Backbone.FilterableCollection', function () {
 			filterable.filter(iterator);
 			filterable._excludedModels.should.have.length(2);
 		});
+
 		it('should have no models when _restore is called ', function() {
 			filterable._restore();
 			filterable._excludedModels.should.have.length(0);
 		});
+
 	});
 });
