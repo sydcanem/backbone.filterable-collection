@@ -1,15 +1,15 @@
 /**
  * Backbone FilterableCollection
- * Version 0.1.0
+ * Version 0.1.3
  *
  * https://github.com/sydcanem/Backbone.FilterableCollection
  */
-( function( root, factory ) {
+( function ( root, factory ) {
 	if ( typeof exports === 'object' && typeof require === 'function' ) {
 		module.exports = factory( require( "underscore" ), require( "backbone" ) );
 	} else if ( typeof define === "function" && define.amd ) {
 		// AMD. Register as an anonymous module.
-		define( [ "underscore", "backbone" ], function( _, Backbone ) {
+		define( [ "underscore", "backbone" ], function ( _, Backbone ) {
 			// Use global variables if the locals are undefined.
 			return factory( _ || root._, Backbone || root.Backbone );
 		} );
@@ -17,26 +17,24 @@
 		// RequireJS isn't being used. Assume underscore and backbone are loaded in <script> tags
 		factory( _, Backbone );
 	}
-}( this, function( _, Backbone ) {
+}( this, function ( _, Backbone ) {
 
 	Backbone.FilterableCollection = Backbone.Collection.extend( {
 
-		constructor: function( options ) {
+		constructor: function ( options ) {
+			// Set original models
+			this.listenTo( this, "reset:original", this._setOriginal );
+
 			Backbone.Collection.apply( this, arguments );
-			// Storing original models after server sync for reference
-			this.listenTo( this, "sync", this._setOriginal );
-			// Storing original models if models are not from server
-			// this event is unbinded if either "sync" or initial "reset" is called
-			this.listenToOnce( this, "reset", this._setOriginal );
 		},
 
 		/**
-		 * Collection of models that initialized the collection
+		 * Array of models as reference
 		 */
 		_original: [],
 
 		/**
-		 * Collection of models that were excluded during filtering
+		 * Array of models that were excluded during filtering
 		 */
 		_excludedModels: [],
 
@@ -45,56 +43,68 @@
 		 * @param  {Function} iterator
 		 * @return {null}
 		 */
-		filter: function( iterator ) {
+		filter: function ( iterator ) {
 			var excludes = [];
 			var includes = [];
 			var that = this;
 
-			_.each( this._original, function( model, index ) {
-				if ( iterator.call( that, model, index, this.models ) ) {
+			// this._original is empty, that means we're on our first filtering
+			// so use this.models instead
+			var collection = this._original.length ? this._original : this.models;
+
+			_.each( collection, function ( model, index ) {
+				if ( iterator.call( that, model, index, collection ) ) {
 					includes.push( model );
 				} else {
 					excludes.push( model );
 				}
 			} );
 
-			// emits reset to re-render view if used in marionette.collectview;
-			this.reset( includes );
 			this._excludedModels = excludes;
+			this._resetModels( includes );
 		},
 
 		/**
 		 * Restore this.models to original
 		 */
-		_restore: function() {
+		_restore: function () {
 			this._excludedModels = [];
 			this.reset( this._original );
 		},
 
 		/**
-		 * Sets the original collection on "sync" or on first "reset" event
-		 * @param {Backbone.Collection} collection
+		 * Resetting models after filter and filterItems
 		 */
-		_setOriginal: function( collection ) {
-			this._original = collection.models;
-			// Stop listening on succeding "reset" event
-			this.stopListening( this, "reset", this._setOriginal );
+		_resetModels: function ( models ) {
+			this.trigger( 'reset:original', models );
+			this.reset( models );
 		},
 
-		include: function() {},
-		exclude: function() {},
+		/**
+		 * Sets a reference attribute collection (this._original)
+		 * @param {Backbone.Collection} collection
+		 */
+		_setOriginal: function ( models ) {
+			// Merge excludes models with new models
+			this._original = this._excludedModels.concat( models );
+			// emptying excludedModels for next filtering
+			this._excludedModels = [];
+		},
+
+		include: function () {},
+		exclude: function () {},
 
 		/**
 		 * Performs filter on this.models based on the passed models
 		 * @param  {Backbone.Model} models Backbone models that is to be included
 		 * @return {null}
 		 */
-		filterItems: function( models ) {
+		filterItems: function ( models ) {
 			var excludes = [];
 			var includes = [];
-			var that = this;
+			var collection = this._original.length ? this._original : this.models;
 
-			_.each( this._original,  function( model ) {
+			_.each( collection, function ( model ) {
 				if ( _.contains( models, model ) ) {
 					includes.push( model );
 				} else {
@@ -102,9 +112,8 @@
 				}
 			} );
 
-			// Emits reset to re-render view if used in Marionette.Collectview;
-			this.reset( includes );
 			this._excludedModels = excludes;
+			this._resetModels( includes );
 		}
 	} );
 

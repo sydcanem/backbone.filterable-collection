@@ -40,30 +40,7 @@ describe( 'Backbone.FilterableCollection', function () {
 		});
 	});
 
-	describe('original models attribute', function() {
-		var filterable;
-
-		before(function(){
-			filterable = new Backbone.FilterableCollection();
-		});
-		
-		it('should have models on collection "reset"', function() {
-			var testData = [{'id': 1}, {'id':2}, {'id':3}];
-			filterable.reset(testData);
-			
-			filterable._original.should.have.length(3);
-		});
-
-		it('should not change model count on next reset', function() {
-			var testData = [{'id': 1}, {'id':2}];
-			
-			filterable.reset(testData);
-			filterable._original.should.have.length(3);
-			filterable.should.have.length(2);
-		});
-	});
-
-	describe('excludedModels attribute', function () {
+	describe('original models attribute', function () {
 		var filterable;
 
 		before(function () {
@@ -79,7 +56,8 @@ describe( 'Backbone.FilterableCollection', function () {
 			includes.push( filterable.findWhere({'id':2}) );
 
 			filterable.filterItems( includes );
-			filterable._excludedModels.should.have.length(1);
+			filterable._original.should.have.length(3);
+			filterable.should.have.length(2);
 		});
 
 		it('should have models if method filter is called', function () {
@@ -91,7 +69,8 @@ describe( 'Backbone.FilterableCollection', function () {
 			}
 
 			filterable.filter(iterator);
-			filterable._excludedModels.should.have.length(2);
+			filterable._original.should.have.length(3);
+			filterable.should.have.length(1);
 		});
 
 		it('should have no models when _restore is called ', function() {
