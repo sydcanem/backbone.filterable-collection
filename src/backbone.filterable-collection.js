@@ -118,5 +118,5 @@
 	} );
 
 
-	return Backbone.FilterableCollection;
+	return Backbone;
 } ) );
